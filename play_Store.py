@@ -74,3 +74,82 @@ df_copy['Year'] = df_copy['Last Updated'].dt.year
 print(df_copy.info())
 
 df_copy.to_csv('Cleaned_google_playstore.csv')
+
+df_copy = df_copy[df_copy.duplicated('App')]
+df_copy = df_copy.drop_duplicates(subset=['App'], keep='first')
+print(df_copy.shape)
+
+numerical_colm = df_copy.select_dtypes(include=['number']).columns
+categorical_colm = df_copy.select_dtypes(include=['object','str','category']).columns
+
+def loopz():
+    print("Numerical columns:")
+    count = 0
+    for i in numerical_colm:
+        count = count+1
+        print(i)
+    print(f"Count:{count}")   
+
+    print("Categorical columns:")
+    counts = 0
+    for j in categorical_colm:
+        counts = counts+1
+        print(j)
+    print(f"counts:{counts}")
+loopz()
+
+for col in categorical_colm:
+    print(df[col].value_counts(normalize=True)*100)
+    print("--------------------------")
+
+plt.figure(figsize=(15,15))
+plt.suptitle("Univariate analysis of Numberical Feature",fontsize=20, fontweight='bold', alpha=0.8, y=1.)
+
+
+plt.figure(figsize=(15, 15))
+
+plt.suptitle(
+    "Univariate Analysis of Numerical Features",
+    fontsize=20,
+    fontweight='bold',
+    alpha=0.8,
+    y=1.0
+)
+
+for i in range(0, len(numerical_colm)):
+
+    plt.subplot(5, 3, i + 1)
+
+    sns.kdeplot(
+        x=df_copy[numerical_colm[i]],
+        fill=True,
+        color='r'
+    )
+
+    plt.xlabel(numerical_colm[i])
+
+plt.tight_layout()
+# plt.show()
+
+
+plt.figure(figsize=(20,15))
+plt.suptitle('Univariate Analysis of Categorical Feature', fontsize=20, fontweight='bold', alpha=0.8, y=1.)
+category = ['Type','Content Rating']
+for i in range(0, len(category)):
+    plt.subplot(2, 2, i+1)
+    sns.countplot(x=df_copy[category[i]],palette='Set2')
+    plt.xlabel(category[i])
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+# plt.show()
+
+plt.figure(figsize=(15, 17))
+
+df_copy['Category'].value_counts().plot.pie(
+    autopct='%1.1f%%',
+    startangle=90
+)
+
+plt.title('Category Distribution')
+plt.ylabel('')
+plt.show()
